@@ -3,10 +3,10 @@
 module spi_master#(
     parameter bit_data = 1024,
     parameter frequency_25MGz = 25000000,
-    parameter frequency_A = 440*55,
-    parameter frequency_G = 392,
-    parameter frequency_F = 349,
-    parameter frequency_C = 262    
+    parameter frequency_A = 440,
+    parameter frequency_G = 'd392,
+    parameter frequency_F = 'd349,
+    parameter frequency_C = 'd262    
     )(
 input clk,
 input [3 : 0]sw,
@@ -24,10 +24,10 @@ reg [4 : 0] counter_shift_resolution = 5'b10000;
 reg shift_resolution = 0;
 reg time_one_bit = 0;
 reg [20:0] counter_time_one_bit = 0;
-reg [20:0] frequency_note = 0;
+reg [32:0] frequency_note = 0;
 reg [3 : 0] state_sw;
 reg sync_driver = 1'b0;
-reg [20 : 0] counter_note = 0;
+reg [32 : 0] counter_note = 0;
 reg [20 : 0] note = 0;
 reg [1 : 0] frequency_divider_25MGz = 2'b00;
 reg driver_for_divider_25MGz = 0;
@@ -39,10 +39,13 @@ assign sclk = driver_for_divider_25MGz;
 
 always_ff @(posedge clk) begin
     if (frequency_divider_25MGz != 2'b11) begin
-        driver_for_divider_25MGz = ~driver_for_divider_25MGz ;
-        frequency_divider_25MGz = 0;
+        driver_for_divider_25MGz = 0;
+        frequency_divider_25MGz = frequency_divider_25MGz + 1;
     end
-    else frequency_divider_25MGz = frequency_divider_25MGz + 1;
+    else begin 
+        frequency_divider_25MGz = 0;
+        driver_for_divider_25MGz = 1;
+        end
 end
 
 
@@ -53,11 +56,11 @@ end
 always_comb begin 
     state_sw = {sw[3], sw[2], sw[1], sw[0]};
     case (sw)
-        4'b0001: frequency_note = frequency_25MGz / (64*16 * frequency_A);
-        4'b0010: frequency_note = frequency_25MGz / (64*16 * frequency_C);
-        4'b0100: frequency_note = frequency_25MGz / (64*16 * frequency_G);
-        4'b1000: frequency_note = frequency_25MGz / (64*16 * frequency_F);
-    default : frequency_note = frequency_25MGz;  
+        4'b0001: frequency_note = frequency_25MGz / (64 * frequency_A);
+        4'b0010: frequency_note = frequency_25MGz / (64 * frequency_G);
+        4'b0100: frequency_note = frequency_25MGz / (64 * frequency_F);
+        4'b1000: frequency_note = frequency_25MGz / (64 * frequency_C);
+    default : frequency_note = frequency_note;  
     endcase  
 end
 
