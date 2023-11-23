@@ -101,7 +101,7 @@ always @(posedge sclk) begin
         shift_resolution <= 1;
         counter_note <=  counter_note + 1;
      end
-    else if (note_state_chek != note_state & counter_note > 16) begin
+    else if (note_state_chek != note_state & counter_note >= 16) begin
         counter_note = 0;
     end
     else if (counter_note != frequency_note & button_action == 1) begin
