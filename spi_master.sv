@@ -12,13 +12,24 @@ module spi_master#(
     parameter frequency_G1 = 392,
     parameter frequency_G2 = 784,
     parameter frequency_F1 = 349,
-    parameter frequency_F2h = 740
+    parameter frequency_F2h = 740,
+    
+    parameter frequency_A3 = 1720,
+    parameter frequency_A4 = 3440,
+    parameter frequency_B3 = 1975,
+    parameter frequency_C4 = 2093,
+    parameter frequency_D3 = 1174,
+    parameter frequency_E4 = 2637,
+    parameter frequency_G3 = 1568,
+    parameter frequency_G4 = 3136,
+    parameter frequency_F3 = 1396,
+    parameter frequency_F4h = 2960
     
     )(
 input clk,
-input [3 : 0]note_state,
+input logic [5 : 0] note_state,
 input button_action,
-input [bit_data - 1 : 0] data,
+input logic [bit_data - 1 : 0] data,
 
 output logic sync,
 output logic mosi,
@@ -54,18 +65,28 @@ end
 
 
 
-always_comb begin 
+always@(posedge sclk) begin 
     case (note_state)
-        4'b0001: frequency_note = 888; // frequency_A1
-        4'b0010: frequency_note = 444; // frequency_A2
-        4'b0011: frequency_note = 791; // frequency_B1 
-        4'b0100: frequency_note = 747; // frequency_C1
-        4'b0101: frequency_note = 1327;// frequency_D1
-        4'b0110: frequency_note = 593; // frequency_E2
-        4'b0111: frequency_note = 996; // frequency_G1
-        4'b1000: frequency_note = 498; // frequency_G2
-        4'b1001: frequency_note = 1119;// frequency_F1
-        4'b1010: frequency_note = 528; // frequency_F2h
+        6'b000001: frequency_note = 888; // frequency_A1
+        6'b000010: frequency_note = 444; // frequency_A2
+        6'b000011: frequency_note = 791; // frequency_B1 
+        6'b000100: frequency_note = 747; // frequency_C1
+        6'b000101: frequency_note = 1327;// frequency_D1
+        6'b000110: frequency_note = 593; // frequency_E2
+        6'b000111: frequency_note = 996; // frequency_G1
+        6'b001000: frequency_note = 498; // frequency_G2
+        6'b001001: frequency_note = 1119;// frequency_F1
+        6'b001010: frequency_note = 528; // frequency_F2h
+        6'b001011: frequency_note = 227; // frequency_A3
+        6'b001100: frequency_note = 113;// frequency_A4
+        6'b001101: frequency_note = 198;// frequency_B3
+        6'b001110: frequency_note = 187;// frequency_C4
+        6'b001111: frequency_note = 333;// frequency_D3
+        6'b010000: frequency_note = 148;// frequency_E4
+        6'b010001: frequency_note = 249;// frequency_G3
+        6'b010010: frequency_note = 125;// frequency_G4
+        6'b010011: frequency_note = 280;// frequency_F3
+        6'b010100: frequency_note = 132;// frequency_F4h
     default : frequency_note = frequency_25MGz;  
     endcase  
 end
@@ -110,69 +131,3 @@ always@(posedge sclk)
     end
     
 endmodule
-//assign sclk = driver_for_divider_25MGz;
-
-//always_ff @(posedge clk) begin
-//    if (frequency_divider_25MGz != 2'b11) begin
-//        frequency_divider_25MGz = frequency_divider_25MGz + 1;
-//        driver_for_divider_25MGz = 0;
-//    end
-//    else begin
-//        driver_for_divider_25MGz = 1;
-//        frequency_divider_25MGz = 0;
-//    end
-//end
-
-
-//always_comb begin 
-//    case (note_state)
-//        4'b0001: note = frequency_A;
-//        4'b0010: note = frequency_C;
-//        4'b0100: note = frequency_G;
-//        4'b1000: note = frequency_F;
-//    default : note = 1;  
-//    endcase  
-//end
-
-//assign sync = sync_driver; 
-//always @(posedge sclk) begin
-//    frequency_note = frequency_25MGz / (64*16 * note);
-//    if (counter_note != frequency_note) begin
-//        counter_note = counter_note + 1;
-//        sync_driver = 1'b0;
-//    end    
-//    else begin
-//        sync_driver = 1'b1;
-//        counter_note = 0;
-//    end
-//end
-//always@(posedge sync) begin
-//        shift_resolution = sync_driver; 
-//end
-//always@(posedge sclk) begin
-//    if(counter_shift_resolution != 5'b10000 & shift_resolution == 1) begin
-//        counter_shift_resolution = counter_shift_resolution + 1;
-//    end    
-//    else begin 
-//        shift_resolution = 0;
-//        counter_shift_resolution = 0;
-//    end
-//end  
-
-//always@(posedge sclk)
-//    if (button_action != 1) begin
-//        random_data = 0;
-//        mosi = 0;
-//    end
-//    else if (random_data == 0) begin
-//            random_data = data;
-//    end
-//    else if (shift_resolution == 1) begin
-//            mosi <= random_data[bit_data - 1];
-//            random_data = random_data << 1;
-//    end 
-//    else begin 
-//        mosi = 0;    
-//    end
-    
-//endmodule

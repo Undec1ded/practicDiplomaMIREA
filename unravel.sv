@@ -6,25 +6,28 @@ module unravel#(
     input clk,
     input button_action,
 
-    output logic [3 : 0] note
+    output logic [5 : 0] note
 
 );
-reg [3 : 0] idle =  4'b0000;
-reg [3 : 0] note1 = 4'b0001;
-reg [3 : 0] note2 = 4'b0010;
-reg [3 : 0] note3 = 4'b0011;
-reg [3 : 0] note4 = 4'b0100;
-reg [3 : 0] note5 = 4'b0101;
-reg [3 : 0] note6 = 4'b0110;
-reg [3 : 0] note7 = 4'b0111;
-reg [3 : 0] note8 = 4'b1000;
-reg [3 : 0] note9 = 4'b1001;
-reg [3 : 0] note10 = 4'b1010;
-reg [3 : 0] note11 = 4'b1011;
-reg [3 : 0] note12 = 4'b1100;
-reg [3 : 0] note13 = 4'b1101;
-reg [3 : 0] note14 = 4'b1110;
-reg [3 : 0] note15 = 4'b1111;
+reg [4 : 0] idle =  5'b00000;
+reg [4 : 0] note1 = 5'b00001;
+reg [4 : 0] note2 = 5'b00010;
+reg [4 : 0] note3 = 5'b00011;
+reg [4 : 0] note4 = 5'b00100;
+reg [4 : 0] note5 = 5'b00101;
+reg [4 : 0] note6 = 5'b00110;
+reg [4 : 0] note7 = 5'b00111;
+reg [4 : 0] note8 = 5'b01000;
+reg [4 : 0] note9 = 5'b01001;
+reg [4 : 0] note10 = 5'b01010;
+reg [4 : 0] note11 = 5'b01011;
+reg [4 : 0] note12 = 5'b01100;
+reg [4 : 0] note13 = 5'b01101;
+reg [4 : 0] note14 = 5'b01110;
+reg [4 : 0] note15 = 5'b01111;
+reg [4 : 0] note16 = 5'b10000;
+reg [4 : 0] note17 = 5'b10001;
+reg [4 : 0] note18 = 5'b10010;
 
 reg [3 : 0] A1_note = 4'b0001;
 reg [3 : 0] A2_note = 4'b0010;  
@@ -36,6 +39,17 @@ reg [3 : 0] G1_note = 4'b0111;
 reg [3 : 0] G2_note = 4'b1000;
 reg [3 : 0] F1_note = 4'b1001;
 reg [3 : 0] F2h_note = 4'b1010;
+
+reg [5 : 0] A3_note = 6'b001011;
+reg [5 : 0] A4_note = 6'b001100;  
+reg [5 : 0] B3_note = 6'b001101;
+reg [5 : 0] C3_note = 6'b001110;
+reg [5 : 0] D3_note = 6'b001111;
+reg [5 : 0] E4_note = 6'b010000;
+reg [5 : 0] G3_note = 6'b010001;
+reg [5 : 0] G4_note = 6'b010010;
+reg [5 : 0] F3_note = 6'b010011;
+reg [5 : 0] F4h_note = 6'b010100;
 
 reg [24 : 0] counter_sec = 0; 
 reg [23 : 0] counter_time = 0;
@@ -55,111 +69,63 @@ always@ (posedge clk) begin
 end    
 end
 
-always@ (posedge time_driver) begin
-    if (button_action == 1 & counter_sec != 10'b1101001001) begin
+always@(posedge time_driver) begin
+    if ((button_action) == 1 & (counter_sec != 9'b111100001)) begin
         counter_sec = counter_sec + 1;
-        case (state_note)
-            idle:   if (counter_sec == 5'b11110) begin
-                        state_note = note1;       
-                    end
-                    else begin
-                        note = 0;
-                    end
-            note1:  if (counter_sec == 6'b111_100) begin
-                        state_note = note2;       
-                    end
-                    else begin
-                        note = G2_note;
-                    end
-            note2:  if (counter_sec == 7'b1_111_000) begin
-                        state_note = note3;       
-                    end
-                    else begin
-                        note = A2_note;
-                    end
-            note3:  if (counter_sec == 8'b10_110_100) begin
-                        state_note = note4;       
-                    end
-                    else begin
-                        note = G2_note;
-                    end
-            note4:  if (counter_sec == 8'b11_110_000) begin
-                        state_note = note5;       
-                    end
-                    else begin
-                        note = F2h_note;
-                    end
-            note5:  if (counter_sec == 9'b100_101_100) begin
-                        state_note = note6;       
-                    end
-                    else begin
-                        note = E2_note;
-                    end
-            note6:  if (counter_sec == 9'b101_101_000) begin
-                        state_note = note7;       
-                    end
-                    else begin
-                        note = A2_note;
-                    end
-            note7:  if (counter_sec == 9'b110_100_100) begin
-                        state_note = note8;       
-                    end
-                    else begin
-                        note = G2_note;
-                    end
-            note8:  if (counter_sec == 9'b111_100_000) begin
-                        state_note = note9;       
-                    end
-                    else begin
-                        note = F2h_note;
-                    end
-            note9:  if (counter_sec == 10'b1_000_011_100) begin
-                        state_note = note10;       
-                    end
-                    else begin
-                        note = E2_note;
-                    end
-            note10:  if (counter_sec == 10'b1_000_111_010) begin
-                        state_note = note11;       
-                    end
-                    else begin
-                        note = E2_note;
-                    end
-            note11: if (counter_sec == 10'b1_001_110_110) begin
-                        state_note = note12;       
-                    end
-                    else begin
-                        note = D1_note;
-                    end
-            note12: if (counter_sec == 10'b1_010_010_100) begin
-                        state_note = note13;       
-                    end
-                    else begin
-                        note = D1_note;
-                    end
-            note13: if (counter_sec == 10'b1_011_010_000) begin
-                        state_note = note14;       
-                    end
-                    else begin
-                        note = C1_note;
-                    end
-            note14: if (counter_sec == 10'b1_100_001_100) begin
-                        state_note = note15;       
-                    end
-                    else begin
-                        note = D1_note;
-                    end     
-            note15: if (counter_sec == 10'b1_10_1001_000) begin
-                        state_note = idle;       
-                    end
-                    else begin
-                        note = B1_note;
-                        counter_sec = 0;
-                    end     
-        endcase
     end
     else begin 
         counter_sec = 0;
-    end
+    end  
+    case (counter_sec)
+        1'b0: state_note = idle;
+        6'b111110: state_note = note1;       
+        7'b1000100: state_note = note2;       
+        7'b1001111: state_note = note3;
+        7'b1111110: state_note = note4;
+        8'b10000100: state_note = note5;
+        8'b10001111: state_note = note6;
+        8'b10111111: state_note = note7;
+        8'b11001010: state_note = note8;
+        8'b11111001: state_note = note9;
+        9'b100000011: state_note = note10;
+        9'b100000101: state_note = note11;
+        9'b100101110: state_note = note12; 
+        9'b100110000: state_note = note13; 
+        9'b101000001: state_note = note14;  
+        10'b101101011: state_note = note15; 
+        10'b101110110: state_note = note16;  
+        10'b101111100: state_note = note17; 
+        10'b111100000: begin
+            state_note = idle;
+            counter_sec = 0;
+        end
+    endcase  
+    
 end
+
+always @(posedge clk) begin
+    
+        case (state_note)
+            idle:   note = 0;   
+            note1:  note = G4_note;
+            note2:  note = A4_note;
+            note3:  note = G4_note;
+            note4:  note = F4h_note;
+            note5:  note = E4_note;
+            note6:  note = A4_note;
+            note7:  note = G4_note;
+            note8:  note = F4h_note;
+            note9:  note = E4_note;
+            note10: note = 0;
+            note11: note = E4_note;
+            note12: note = D3_note;
+            note13: note = 0;
+            note14: note = D3_note;
+            note15: note = C3_note;
+            note16: note = D3_note;
+            note17: note = B3_note;
+            default: note = 0;             
+        endcase
+    end
+
 endmodule
