@@ -49,6 +49,8 @@ reg [20 : 0] counter_note = 0;
 reg [20 : 0] note = 0;
 reg [1 : 0] frequency_divider_25MGz = 2'b00;
 reg driver_for_divider_25MGz = 0;
+reg [5 : 0] note_state_chek = 0;
+
 
 assign sclk = driver_for_divider_25MGz;
 
@@ -89,6 +91,8 @@ always@(posedge sclk) begin
         6'b010100: frequency_note = 132;// frequency_F4h
     default : frequency_note = frequency_25MGz;  
     endcase  
+    
+
 end
 
 
@@ -97,11 +101,16 @@ always @(posedge sclk) begin
         shift_resolution <= 1;
         counter_note <=  counter_note + 1;
      end
+    else if (note_state_chek != note_state & counter_note > 16) begin
+        counter_note = 0;
+    end
     else if (counter_note != frequency_note & button_action == 1) begin
         shift_resolution <= 0;
         counter_note <=  counter_note + 1;
     end
     else counter_note <= 0;
+    note_state_chek = note_state;
+
 end
 always@ (posedge sclk) begin
 
