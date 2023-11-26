@@ -1,33 +1,49 @@
 `timescale 1ns / 1ps
+    //  frequency_A1 = 440, 
+    //  frequency_A2 = 880,
+    //  frequency_Ah2 = 932,
 
+    //  frequency_B1 = 494,
+    //  frequency_C1 = 523,
+    //  frequency_D1 = 294,
+    //  frequency_E2 = 659,
+    //  frequency_G1 = 392,
+    //  frequency_G2 = 784,
+    //  frequency_F1 = 349,
+    //  frequency_F2h = 740,
+    // 
+        
+    //  frequency_A3 = 1720,
+    //  frequency_B3 = 1975,
+    //  frequency_C4 = 2093,
+    //  frequency_D3 = 1174,
+    //  frequency_E4 = 2637,
+    //  frequency_G3 = 1568,
+    //  frequency_G4 = 3136,
+    //  frequency_F3 = 1396,
+    //  frequency_F4h = 2960
+
+    // A1 = 440
+    // Ah1 = 466
+    // A2 = 880
+    // Ah2 = 932
+    // C2 = 523
+    // C3 = 1047
+    // D2 = 587
+    // Dh2 = 622
+    // D3 = 1174
+    // F2 = 698
+    // F3 = 1396
+    // G1 = 392
+    // G2 = 784
+    // G3 = 1568
 module spi_master#(
     parameter bit_data = 1024,
-    parameter frequency_25MGz = 25000000,
-    parameter frequency_A1 = 440,
-    parameter frequency_A2 = 880,
-    parameter frequency_B1 = 494,
-    parameter frequency_C1 = 523,
-    parameter frequency_D1 = 294,
-    parameter frequency_E2 = 659,
-    parameter frequency_G1 = 392,
-    parameter frequency_G2 = 784,
-    parameter frequency_F1 = 349,
-    parameter frequency_F2h = 740,
-    
-    parameter frequency_A3 = 1720,
-    parameter frequency_A4 = 3440,
-    parameter frequency_B3 = 1975,
-    parameter frequency_C4 = 2093,
-    parameter frequency_D3 = 1174,
-    parameter frequency_E4 = 2637,
-    parameter frequency_G3 = 1568,
-    parameter frequency_G4 = 3136,
-    parameter frequency_F3 = 1396,
-    parameter frequency_F4h = 2960
-    
+    parameter frequency_25MGz = 25000000
+     
     )(
 input clk,
-input logic [5 : 0] note_state,
+input logic [3 : 0] note_state,
 input button_action,
 input logic [bit_data - 1 : 0] data,
 
@@ -35,6 +51,10 @@ output logic sync,
 output logic mosi,
 output logic sclk
     );
+
+// frequency notes
+
+
 
 reg [bit_data - 1 : 0] random_data = data;
 
@@ -65,36 +85,32 @@ always_ff @(posedge clk) begin
     end
 end
 
-
+//the parameters for the frequencies are calculated by the formula frequency_note = frequency_25MGz / (64 * frequency_A1),
+//where frequency_A1 is the frequency of the note, 64 is the number of points of the reproduced sine wave
 
 always@(posedge sclk) begin 
     case (note_state)
-        6'b000001: frequency_note = 888; // frequency_A1
-        6'b000010: frequency_note = 444; // frequency_A2
-        6'b000011: frequency_note = 791; // frequency_B1 
-        6'b000100: frequency_note = 747; // frequency_C1
-        6'b000101: frequency_note = 1327;// frequency_D1
-        6'b000110: frequency_note = 593; // frequency_E2
-        6'b000111: frequency_note = 996; // frequency_G1
-        6'b001000: frequency_note = 498; // frequency_G2
-        6'b001001: frequency_note = 1119;// frequency_F1
-        6'b001010: frequency_note = 528; // frequency_F2h
-        6'b001011: frequency_note = 227; // frequency_A3
-        6'b001100: frequency_note = 113;// frequency_A4
-        6'b001101: frequency_note = 198;// frequency_B3
-        6'b001110: frequency_note = 187;// frequency_C4
-        6'b001111: frequency_note = 333;// frequency_D3
-        6'b010000: frequency_note = 148;// frequency_E4
-        6'b010001: frequency_note = 249;// frequency_G3
-        6'b010010: frequency_note = 125;// frequency_G4
-        6'b010011: frequency_note = 280;// frequency_F3
-        6'b010100: frequency_note = 132;// frequency_F4h
+        4'b0001: frequency_note = 888; // frequency_A1
+        4'b0010: frequency_note = 838; // frequency_Ah1
+        4'b0011: frequency_note = 444; // frequency_A2 
+        4'b0100: frequency_note = 419; // frequency_Ah2
+        4'b0101: frequency_note = 747; // frequency_C2
+        4'b0110: frequency_note = 373; // frequency_C3
+        4'b0111: frequency_note = 665; // frequency_D2
+        4'b1000: frequency_note = 628; // frequency_Dh2
+        4'b1001: frequency_note = 333; // frequency_D3
+        4'b1010: frequency_note = 560; // frequency_F2
+        4'b1011: frequency_note = 279; // frequency_F3
+        4'b1100: frequency_note = 996; // frequency_G1
+        4'b1101: frequency_note = 498; // frequency_G2
+        4'b1110: frequency_note = 249; // frequency_G3
     default : frequency_note = frequency_25MGz;  
     endcase  
     
 
 end
 
+//logic signal out
 
 always @(posedge sclk) begin
     if (counter_note < 16 & button_action == 1) begin
@@ -121,6 +137,8 @@ always@ (posedge sclk) begin
     else sync = 0;
     
 end
+
+//spi
 
 always@(posedge sclk)
     if (button_action != 1) begin
